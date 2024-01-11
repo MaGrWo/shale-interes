@@ -281,12 +281,6 @@ module Shale
         # @return [String]
         #
         # @api public
-        def to_json(instance, only: nil, except: nil, context: nil, pretty: false)
-          Shale.json_adapter.dump(
-            as_json(instance, only: only, except: except, context: context),
-            pretty: pretty
-          )
-        end
 
         # Convert YAML to Object
         #
@@ -993,15 +987,6 @@ module Shale
       # @return [String]
       #
       # @api public
-      def to_json(only: nil, except: nil, context: nil, pretty: false)
-        self.class.to_json(
-          self,
-          only: only,
-          except: except,
-          context: context,
-          pretty: pretty
-        )
-      end
 
       # Convert Object to YAML
       #
