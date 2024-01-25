@@ -1,2 +1,7 @@
 /pkg/
 /coverage/
+/.idea/.gitignore
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/shale-interes.iml
+/.idea/vcs.xml
