@@ -132,6 +132,20 @@ module Shale
         "#{XS_NAMESPACE_URI}:boolean",
       ].freeze
 
+      # Shale module template
+      # @api private
+      BASE_MODULE_TEMPLATE = ERB.new(<<~TEMPLATE, trim_mode: '-')
+        <%- type.modules.each_with_index do |name, i| -%>
+        <%= '  ' * i %>module <%= name %>
+        <%- end -%>
+        <%- indent = '  ' * type.modules.length -%>
+        <%= indent %>class <%= type.root_name %>
+        <%= indent %>end
+        <%- type.modules.length.times do |i| -%>
+        <%= '  ' * (type.modules.length - i - 1) %>end
+        <%- end -%>
+      TEMPLATE
+
       # Shale model template
       # @api private
       MODEL_TEMPLATE = ERB.new(<<~TEMPLATE, trim_mode: '-')
