@@ -84,22 +84,35 @@ if params[:compile]
       schemas,
       namespace_mapping: namespace_mapping
     )
+    base_modules = Shale::Schema.modules_from_xml(
+      schemas,
+      namespace_mapping: namespace_mapping
+    )
   else
     models = Shale::Schema.from_json(
       schemas,
       root_name: params[:root],
       namespace_mapping: namespace_mapping
     )
+    base_modules = {}
   end
 
   if params[:output]
     dir = File.expand_path(params[:output], Dir.pwd)
     FileUtils.mkdir_p(dir) unless File.directory?(dir)
 
-    models.each do |name, model|
+    # models.each do |name, model|
+    #   output_path = File.join(dir, "#{name}.rb")
+    #   FileUtils.mkdir_p(File.dirname(output_path))
+    #   File.write(output_path, model)
+    # end
+
+    base_modules.each do |name, model|
       output_path = File.join(dir, "#{name}.rb")
-      FileUtils.mkdir_p(File.dirname(output_path))
-      File.write(output_path, model)
+      unless File.file?(output_path)
+        FileUtils.mkdir_p(File.dirname(output_path))
+        File.write(output_path, model)
+      end
     end
   else
     output = models.map do |name, model|

@@ -88,5 +88,9 @@ module Shale
     def self.from_xml(schemas, namespace_mapping: nil)
       XMLCompiler.new.to_models(schemas, namespace_mapping: namespace_mapping)
     end
+
+    def self.modules_from_xml(schemas, namespace_mapping: nil)
+      XMLCompiler.new.to_modules(schemas, namespace_mapping: namespace_mapping)
+    end
   end
 end

@@ -297,6 +297,14 @@ module Shale
         end
       end
 
+      def to_modules(schemas, namespace_mapping: nil)
+        types = as_models(schemas, namespace_mapping: namespace_mapping)
+        types.each { |t| t.file_name }
+        types.to_h do |type|
+          [type.file_name, BASE_MODULE_TEMPLATE.result(binding)]
+        end
+      end
+
       private
 
       # Check if node is a given type
