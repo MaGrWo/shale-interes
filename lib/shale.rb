@@ -3,7 +3,6 @@
 require 'yaml'
 
 require_relative 'shale/mapper'
-require_relative 'shale/adapter/csv'
 require_relative 'shale/adapter/json'
 require_relative 'shale/type/boolean'
 require_relative 'shale/type/date'
@@ -52,6 +51,12 @@ require_relative 'shale/version'
 #   Shale.xml_adapter = Shale::Adapter::Ox
 #   Shale.xml_adapter # => Shale::Adapter::Ox
 #
+# @example setting CSV adapter for handling CSV documents
+#   require 'shale/adapter/csv'
+#
+#   Shale.csv_adapter = Shale::Adapter::CSV
+#   Shale.csv_adapter # => Shale::Adapter::CSV
+#
 # @api public
 module Shale
   class << self
@@ -75,16 +80,17 @@ module Shale
     # @api public
     attr_writer :yaml_adapter
 
-    # TOML adapter accessor.
+    # TOML adapter accessor. Available adapters are Shale::Adapter::Tomlib
+    # and Shale::Adapter::TomRB
     #
-    # @param [@see Shale::Adapter::TomlRB] adapter
+    # @param [@see Shale::Adapter::Tomlib] adapter
     #
     # @example setting adapter
-    #   Shale.toml_adapter = Shale::Adapter::TomlRB
+    #   Shale.toml_adapter = Shale::Adapter::Tomlib
     #
     # @example getting adapter
     #   Shale.toml_adapter
-    #   # => Shale::Adapter::TomlRB
+    #   # => Shale::Adapter::Tomlib
     #
     # @api public
     attr_accessor :toml_adapter
@@ -93,11 +99,15 @@ module Shale
     #
     # @param [.load, .dump] adapter
     #
-    # @example
+    # @example setting adapter
     #   Shale.csv_adapter = Shale::Adapter::CSV
     #
+    # @example getting adapter
+    #   Shale.csv_adapter
+    #   # => Shale::Adapter::CSV
+    #
     # @api public
-    attr_writer :csv_adapter
+    attr_accessor :csv_adapter
 
     # XML adapter accessor. Available adapters are Shale::Adapter::REXML,
     # Shale::Adapter::Nokogiri and Shale::Adapter::Ox
@@ -138,19 +148,6 @@ module Shale
     # @api public
     def yaml_adapter
       @yaml_adapter || YAML
-    end
-
-    # Return CSV adapter. By default CSV is used
-    #
-    # @return [.load, .dump]
-    #
-    # @example
-    #   Shale.csv_adapter
-    #   # => Shale::Adapter::CSV
-    #
-    # @api public
-    def csv_adapter
-      @csv_adapter || Adapter::CSV
     end
   end
 end

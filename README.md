@@ -208,8 +208,8 @@ person.to_yaml
 ### Converting TOML to object
 
 To use TOML with Shale you have to set adapter you want to use.
-Out of the box Shale suports [Tomlib](https://github.com/kgiszczak/tomlib).
-It also comes with adapter for [toml-rb](https://github.com/emancu/toml-rb) if you prefer that.
+It comes with adapters for [Tomlib](https://github.com/kgiszczak/tomlib) and
+[toml-rb](https://github.com/emancu/toml-rb).
 For details see [Adapters](#adapters) section.
 
 To set it, first make sure Tomlib gem is installed:
@@ -221,8 +221,8 @@ $ gem install tomlib
 then setup adapter:
 
 ```ruby
-require 'tomlib'
-Shale.toml_adapter = Tomlib
+require 'sahle/adapter/tomlib'
+Shale.toml_adapter = Shale::Adapter::Tomlib
 
 # Alternatively if you'd like to use toml-rb, use:
 require 'shale/adapter/toml_rb'
@@ -352,6 +352,25 @@ person.to_xml
 ```
 
 ### Converting CSV to object
+
+To use CSV with Shale you have to set adapter.
+Shale comes with adapter for [csv](https://github.com/ruby/csv).
+For details see [Adapters](#adapters) section.
+
+To set it, first make sure CSV gem is installed:
+
+```
+$ gem install csv
+```
+
+then setup adapter:
+
+```ruby
+require 'shale/adapter/csv'
+Shale.csv_adapter = Shale::Adapter::CSV
+```
+
+Now you can use CSV with Shale.
 
 CSV represents a flat data structure, so you can't map properties to complex types directly,
 but you can use methods to map properties to complex types
@@ -1066,6 +1085,29 @@ Person.to_csv(people, headers: true, col_sep: '|')
 # James|Sixpack
 ```
 
+Most adapters accept options specific to them. Eg. if you want to be able to work
+with NaN values in JSON:
+
+```ruby
+class Person
+  attribute :age, Shale::Type::Float
+end
+
+person = Person.from_jsom('{"age": NaN}', allow_nan: true)
+
+# =>
+#
+# #<Person:0x0000000113d7a488 @age=Float::NAN>
+
+Person.to_json(person, allow_nan: true)
+
+# =>
+#
+# {
+#   "age": NaN
+# }
+```
+
 ### Using custom models
 
 By default Shale combines mapper and model into one class. If you want to use your own classes
@@ -1155,7 +1197,7 @@ end
 ### Adapters
 
 Shale uses adapters for parsing and generating documents.
-By default Ruby's standard JSON, YAML, CSV parsers are used for handling JSON YAML, CSV documents.
+By default Ruby's standard JSON and YAML parsers are used for handling JSON and YAML documents.
 
 You can change it by providing your own adapter. For JSON, YAML, TOML and CSV adapter must
 implement `.load` and `.dump` class methods.
@@ -1181,6 +1223,14 @@ Shale.toml_adapter = Tomlib
 # if you want to use toml-rb
 require 'shale/adapter/toml_rb'
 Shale.toml_adapter = Shale::Adapter::TomlRB
+```
+
+To handle CSV documents you have to set CSV adapter. Shale provides adapter for `csv` parser:
+
+```ruby
+require 'shale'
+require 'shale/adapter/csv'
+Shale.csv_adapter = Shale::Adapter::CSV
 ```
 
 To handle XML documents you have to explicitly set XML adapter.

@@ -257,13 +257,14 @@ module Shale
         # @param [Array<Symbol>] only
         # @param [Array<Symbol>] except
         # @param [any] context
+        # @param [Hash] json_options
         #
         # @return [model instance]
         #
         # @api public
-        def from_json(json, only: nil, except: nil, context: nil)
+        def from_json(json, only: nil, except: nil, context: nil, **json_options)
           of_json(
-            Shale.json_adapter.load(json),
+            Shale.json_adapter.load(json, **json_options),
             only: only,
             except: except,
             context: context
@@ -277,6 +278,7 @@ module Shale
         # @param [Array<Symbol>] except
         # @param [any] context
         # @param [true, false] pretty
+        # @param [Hash] json_options
         #
         # @return [String]
         #
@@ -292,9 +294,9 @@ module Shale
         # @return [model instance]
         #
         # @api public
-        def from_yaml(yaml, only: nil, except: nil, context: nil)
+        def from_yaml(yaml, only: nil, except: nil, context: nil, **yaml_options)
           of_yaml(
-            Shale.yaml_adapter.load(yaml),
+            Shale.yaml_adapter.load(yaml, **yaml_options),
             only: only,
             except: except,
             context: context
@@ -307,13 +309,15 @@ module Shale
         # @param [Array<Symbol>] only
         # @param [Array<Symbol>] except
         # @param [any] context
+        # @param [Hash] yaml_options
         #
         # @return [String]
         #
         # @api public
-        def to_yaml(instance, only: nil, except: nil, context: nil)
+        def to_yaml(instance, only: nil, except: nil, context: nil, **yaml_options)
           Shale.yaml_adapter.dump(
-            as_yaml(instance, only: only, except: except, context: context)
+            as_yaml(instance, only: only, except: except, context: context),
+            **yaml_options
           )
         end
 
@@ -323,14 +327,15 @@ module Shale
         # @param [Array<Symbol>] only
         # @param [Array<Symbol>] except
         # @param [any] context
+        # @param [Hash] toml_options
         #
         # @return [model instance]
         #
         # @api public
-        def from_toml(toml, only: nil, except: nil, context: nil)
+        def from_toml(toml, only: nil, except: nil, context: nil, **toml_options)
           validate_toml_adapter
           of_toml(
-            Shale.toml_adapter.load(toml),
+            Shale.toml_adapter.load(toml, **toml_options),
             only: only,
             except: except,
             context: context
@@ -343,14 +348,16 @@ module Shale
         # @param [Array<Symbol>] only
         # @param [Array<Symbol>] except
         # @param [any] context
+        # @param [Hash] toml_options
         #
         # @return [String]
         #
         # @api public
-        def to_toml(instance, only: nil, except: nil, context: nil)
+        def to_toml(instance, only: nil, except: nil, context: nil, **toml_options)
           validate_toml_adapter
           Shale.toml_adapter.dump(
-            as_toml(instance, only: only, except: except, context: context)
+            as_toml(instance, only: only, except: except, context: context),
+            **toml_options
           )
         end
 
@@ -367,6 +374,7 @@ module Shale
         #
         # @api public
         def from_csv(csv, only: nil, except: nil, context: nil, headers: false, **csv_options)
+          validate_csv_adapter
           data = Shale.csv_adapter.load(csv, **csv_options.merge(headers: csv_mapping.keys.keys))
 
           data.shift if headers
@@ -392,6 +400,7 @@ module Shale
         #
         # @api public
         def to_csv(instance, only: nil, except: nil, context: nil, headers: false, **csv_options)
+          validate_csv_adapter
           data = as_csv([*instance], only: only, except: except, context: context)
 
           cols = csv_mapping.keys.values
@@ -886,6 +895,15 @@ module Shale
           raise AdapterError, XML_ADAPTER_NOT_SET_MESSAGE unless Shale.xml_adapter
         end
 
+        # Validate CSV adapter
+        #
+        # @raise [AdapterError]
+        #
+        # @api private
+        def validate_csv_adapter
+          raise AdapterError, CSV_ADAPTER_NOT_SET_MESSAGE unless Shale.csv_adapter
+        end
+
         # Convert array with attributes to a hash
         #
         # @param [Array] ary
@@ -993,12 +1011,13 @@ module Shale
       # @param [Array<Symbol>] only
       # @param [Array<Symbol>] except
       # @param [any] context
+      # @param [Hash] yaml_options
       #
       # @return [String]
       #
       # @api public
-      def to_yaml(only: nil, except: nil, context: nil)
-        self.class.to_yaml(self, only: only, except: except, context: context)
+      def to_yaml(only: nil, except: nil, context: nil, **yaml_options)
+        self.class.to_yaml(self, only: only, except: except, context: context, **yaml_options)
       end
 
       # Convert Object to TOML
@@ -1006,12 +1025,13 @@ module Shale
       # @param [Array<Symbol>] only
       # @param [Array<Symbol>] except
       # @param [any] context
+      # @param [Hash] toml_options
       #
       # @return [String]
       #
       # @api public
-      def to_toml(only: nil, except: nil, context: nil)
-        self.class.to_toml(self, only: only, except: except, context: context)
+      def to_toml(only: nil, except: nil, context: nil, **toml_options)
+        self.class.to_toml(self, only: only, except: except, context: context, **toml_options)
       end
 
       # Convert Object to CSV
@@ -1019,6 +1039,8 @@ module Shale
       # @param [Array<Symbol>] only
       # @param [Array<Symbol>] except
       # @param [any] context
+      # @param [true, false] headers
+      # @param [Hash] csv_options
       #
       # @return [String]
       #

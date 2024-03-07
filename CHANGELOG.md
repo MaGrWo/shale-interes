@@ -1,7 +1,13 @@
-## [1.1.0] - [unreleased]
+## [1.2.0] - [unreleased]
+
+### Added
+- Allow to pass adapter specific options
+
+## [1.1.0] - 2024-02-17
 
 ### Added
 - [bkjohnson] Add support for JSON Schema validation keywords (#29)
+- Add support for Ruby 3.3
 
 ### Changed
 - Drop support for Ruby 2.6 and Ruby 2.7
